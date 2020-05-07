@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\Privat\CVB.NET.Solution\src\CVB.NET.Reflection.Caching\CVB.NET.Reflection.Caching.csproj" />
+      <ProjectReference Include="..\RadFramework.Abstractions.Ioc\RadFramework.Abstractions.Ioc.csproj" />
+    </ItemGroup>
+
+</Project>
