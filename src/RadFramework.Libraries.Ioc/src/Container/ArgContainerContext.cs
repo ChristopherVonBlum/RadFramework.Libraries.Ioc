@@ -13,7 +13,7 @@ namespace CVB.NET.Abstractions.Ioc.Injection.Parameter
 
         public void Dispose()
         {
-            this.onDispose?.Invoke();
+            onDispose?.Invoke();
         }
     }
 }

@@ -6,26 +6,20 @@ namespace CVB.NET.Abstractions.Ioc.Injection.Parameter
     public static class Arg<TArg>
     {
         public static TArg Dependency() => (TArg)Arg.Resolve(typeof(TArg));
-        public static TArg Dependency(string dependencyName) => (TArg)Arg.Resolve(typeof(TArg), dependencyName);
     }
 
     public static class Arg
     {
-        public static Func<Type, string, object> CurrentResolver => resolverStack.Peek();
+        public static Func<Type, object> CurrentResolver => resolverStack.Peek();
 
         [ThreadStatic]
-        private static Stack<Func<Type, string, object>> resolverStack;
+        private static Stack<Func<Type, object>> resolverStack;
 
-        internal static IDisposable UseContextualResolver(IDependencyResolver container)
-        {
-            return UseContextualResolver((type, name) => container.Resolve(type, name));
-        }
-
-        internal static IDisposable UseContextualResolver(Func<Type, string, object> resolveArgument)
+        internal static IDisposable UseContextualResolver(Func<Type, object> resolveArgument)
         {
             if (resolverStack == null)
             {
-                resolverStack = new Stack<Func<Type, string, object>>();
+                resolverStack = new Stack<Func<Type, object>>();
             }
 
             resolverStack.Push(resolveArgument);
@@ -35,20 +29,9 @@ namespace CVB.NET.Abstractions.Ioc.Injection.Parameter
 
         internal static object Resolve(Type tService)
         {
-            return CurrentResolver(tService, null);
+            return CurrentResolver(tService);
         }
-
-        internal static object Resolve(Type tService, string dependencyName)
-        {
-            return CurrentResolver(tService, dependencyName);
-        }
-
+        
         public static object Dependency(Type tService) => Resolve(tService);
-        public static object Dependency(Type tService, string dependencyName) => Resolve(tService, dependencyName);
-    }
-
-    internal interface IDependencyResolver
-    {
-        object Resolve(Type type, string name);
     }
 }

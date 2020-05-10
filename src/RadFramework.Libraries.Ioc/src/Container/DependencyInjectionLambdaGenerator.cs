@@ -1,4 +1,6 @@
 using CVB.NET.Abstractions.Ioc.Injection.Parameter;
+using RadFramework.Libraries.Reflection.Caching;
+using RadFramework.Libraries.Reflection.Caching.Queries;
 
 namespace CVB.NET.Abstractions.Ioc.Injection.Lambda
 {
@@ -8,19 +10,20 @@ namespace CVB.NET.Abstractions.Ioc.Injection.Lambda
     using System.Linq.Expressions;
     using System.Reflection;
 
-    using CVB.NET.Reflection.Caching.Cached;
-
     public class DependencyInjectionLambdaGenerator : IDependencyInjectionLambdaGenerator
     {
         private static CachedMethodInfo dependencyMethod;
-        private static CachedMethodInfo namedDependencyMethod;
-
+        
         static DependencyInjectionLambdaGenerator()
         {
             CachedType argType = typeof (Arg);
 
-            dependencyMethod = argType.StaticMethods.Single(m => m.InnerReflectionInfo.Name.Equals(nameof(Arg.Dependency)) && m.ParameterInfos.Length == 1 && m.ParameterInfos.Single().ParameterType == typeof (Type));
-            namedDependencyMethod = argType.StaticMethods.Single(m => m.InnerReflectionInfo.Name.Equals(nameof(Arg.Dependency)) && m.ParameterInfos.Length == 2 && m.ParameterInfos.First().ParameterType == typeof(Type) && m.ParameterInfos.Last().ParameterType == typeof(string));
+            dependencyMethod = argType
+                .Query(ClassQueries.GetPublicStaticMethods)
+                .Single(m => 
+                    m.InnerMetaData.Name.Equals(nameof(Arg.Dependency)) 
+                    && m.Query(MethodBaseQueries.GetParameters).Length == 1 
+                    && m.Query(MethodBaseQueries.GetParameters).Single().ParameterType == typeof (Type));
         }
 
         public Func<object> CreateConstructorInjectionLambda(CachedConstructorInfo injectionConstructor, Func<CachedParameterInfo, string> getDependencyName)
@@ -36,7 +39,7 @@ namespace CVB.NET.Abstractions.Ioc.Injection.Lambda
                                               Expression.Assign(constructionResult,
                                                   Expression.New(injectionConstructor,
                                                       BuildInjectionLambdaArguments(
-                                                          injectionConstructor.CachedParameterInfos,
+                                                          injectionConstructor.Query(MethodBaseQueries.GetParameters).Select(p => (CachedParameterInfo)p).ToArray(),
                                                           getDependencyName))),
 
                                               Expression.Return(returnLabel, constructionResult, returnType),
@@ -119,7 +122,7 @@ namespace CVB.NET.Abstractions.Ioc.Injection.Lambda
                                                 Expression.Call(typedInjectionTarget, 
                                                     injectionMethod,
                                                     BuildInjectionLambdaArguments(
-                                                        injectionMethod.CachedParameterInfos,
+                                                        injectionMethod.Query(MethodBaseQueries.GetParameters).Select(p => (CachedParameterInfo)p).ToArray(),
                                                         getDependencyName))
                                           };
 
@@ -160,7 +163,7 @@ namespace CVB.NET.Abstractions.Ioc.Injection.Lambda
 
             foreach (CachedParameterInfo parmeterInfo in parameterInfos)
             {
-                arguments.Add(MakeArgInjectionPlaceholder(parmeterInfo.InnerReflectionInfo.ParameterType, getDependencyName(parmeterInfo)));
+                arguments.Add(MakeArgInjectionPlaceholder(parmeterInfo.InnerMetaData.ParameterType, getDependencyName(parmeterInfo)));
             }
 
             return arguments.ToArray();
@@ -168,10 +171,10 @@ namespace CVB.NET.Abstractions.Ioc.Injection.Lambda
 
         private static Expression MakeArgInjectionPlaceholder(Type placeholderType, string name = null)
         {
-            if (name != null)
+            /*if (name != null)
             {
                 return Expression.Convert(Expression.Call(namedDependencyMethod, Expression.Constant(placeholderType), Expression.Constant(name)), placeholderType);
-            }
+            }*/
 
             return Expression.Convert(Expression.Call(dependencyMethod, Expression.Constant(placeholderType)), placeholderType);
         }

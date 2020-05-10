@@ -5,8 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\..\Privat\CVB.NET.Solution\src\CVB.NET.Reflection.Caching\CVB.NET.Reflection.Caching.csproj" />
-      <ProjectReference Include="..\RadFramework.Abstractions.Ioc\RadFramework.Abstractions.Ioc.csproj" />
+      <PackageReference Include="RadFramework.Libraries.Reflection" Version="1.0.1" />
     </ItemGroup>
 
 </Project>

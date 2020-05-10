@@ -4,30 +4,30 @@ using RadFramework.Libraries.Ioc.Base;
 
 namespace RadFramework.Libraries.Ioc.Registrations
 {
-    class InstanceRegistration<TServiceKey> : RegistrationBase<TServiceKey>
+    class InstanceRegistration<TServiceKey> : RegistrationBase
     {
         private Lazy<object> lazyContainer;
         private Func<object> instanceContainer;
         
         public InstanceRegistration(WeakReference instance)
         {
-            this.instanceContainer = () => instance.IsAlive ? instance.Target : null;
+            instanceContainer = () => instance.IsAlive ? instance.Target : null;
         }
 
         public InstanceRegistration(object instance)
         {
-            this.instanceContainer = () => instance;
+            instanceContainer = () => instance;
         }
 
         public InstanceRegistration(Func<object> getInstance)
         {
-            this.lazyContainer = new Lazy<object>(getInstance);
-            this.instanceContainer = () => this.lazyContainer.Value;
+            lazyContainer = new Lazy<object>(getInstance);
+            instanceContainer = () => lazyContainer.Value;
         }
         
-        public override object ResolveService(TServiceKey serviceKey)
+        public override object ResolveService(Type serviceKey)
         {
-            return this.instanceContainer();
+            return instanceContainer();
         }
     }
 }

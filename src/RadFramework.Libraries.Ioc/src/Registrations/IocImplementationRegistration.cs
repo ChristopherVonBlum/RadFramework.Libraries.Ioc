@@ -1,25 +1,39 @@
 ﻿using System;
-
+using System.Linq;
+using CVB.NET.Abstractions.Ioc.Injection.Lambda;
+using CVB.NET.Abstractions.Ioc.Injection.Parameter;
 using RadFramework.Libraries.Ioc.Base;
+using RadFramework.Libraries.Ioc.Container;
+using RadFramework.Libraries.Reflection.Caching;
+using RadFramework.Libraries.Reflection.Caching.Queries;
 
 namespace RadFramework.Libraries.Ioc.Registrations
 {
-    public class IocImplementationRegistration<TServiceContainer, TServiceKey> : RegistrationBase<TServiceKey> 
-        where TServiceContainer : IServiceContainer<TServiceKey>
+    public class IocImplementationRegistration : RegistrationBase
     {
-        private readonly Type tImplementation;
+        private readonly SimpleContainer simpleContainer;
 
-        private readonly TServiceContainer container;
-
-        public IocImplementationRegistration(Type tImplementation, TServiceContainer container)
+        private readonly Func<object> construct;
+        
+        public IocImplementationRegistration(CachedType tImplementation,
+            IDependencyInjectionLambdaGenerator lambdaGenerator, SimpleContainer simpleContainer)
         {
-            this.tImplementation = tImplementation;
-            this.container = container;
+            this.simpleContainer = simpleContainer;
+
+            this.construct = lambdaGenerator.CreateConstructorInjectionLambda(
+                tImplementation.Query(t =>
+                    t.GetConstructors()
+                        .OrderByDescending(c => ((CachedConstructorInfo) c).Query(MethodBaseQueries.GetParameters).Length)
+                        .First()), 
+                info => info.InnerMetaData.Name);
         }
 
-        public override object ResolveService(TServiceKey serviceKey)
+        public override object ResolveService(Type serviceKey)
         {
-            throw new NotImplementedException();
+            using (Arg.UseContextualResolver(simpleContainer.Resolve))
+            {
+                return construct();
+            }
         }
     }
 }

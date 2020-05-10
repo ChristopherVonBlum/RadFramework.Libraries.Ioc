@@ -1,8 +1,8 @@
+using RadFramework.Libraries.Reflection.Caching;
+
 namespace CVB.NET.Abstractions.Ioc.Injection.Lambda
 {
     using System;
-
-    using CVB.NET.Reflection.Caching.Cached;
 
     public interface IDependencyInjectionLambdaGenerator
     {
