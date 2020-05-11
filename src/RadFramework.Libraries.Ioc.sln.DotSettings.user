@@ -8,4 +8,5 @@
   &lt;TestAncestor&gt;
     &lt;TestId&gt;NUnit3x::516CDFE2-77DC-4099-9C2B-7A1A3017ADDB::.NETCoreApp,Version=v2.2::Tests.Tests.Test1&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
-&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
+&lt;/SessionState&gt;</s:String>
+	</wpf:ResourceDictionary>

@@ -3,10 +3,11 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp2.1</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageVersion>1.0.2</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="RadFramework.Libraries.Reflection" Version="1.0.2" />
+      <PackageReference Include="RadFramework.Libraries.Reflection" Version="1.0.3" />
     </ItemGroup>
 
 </Project>
