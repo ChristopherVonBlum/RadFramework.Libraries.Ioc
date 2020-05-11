@@ -6,12 +6,11 @@ using RadFramework.Libraries.Ioc.Registrations;
 
 namespace RadFramework.Libraries.Ioc.Container
 {
-    public class Container
+    public class Container : IServiceProvider
     {
         private IDependencyInjectionLambdaGenerator lambdaGenerator = new DependencyInjectionLambdaGenerator();
         
         private ConcurrentDictionary<Type, RegistrationBase> registrations = new ConcurrentDictionary<Type, RegistrationBase>();
-
         public void RegisterTransient(Type tInterface, Type tImplementation)
         {
             registrations[tInterface] = new TransientRegistration(tImplementation, lambdaGenerator, this);
@@ -98,6 +97,11 @@ namespace RadFramework.Libraries.Ioc.Container
         public object Resolve(Type t)
         {
             return registrations[t].ResolveService();
+        }
+
+        public object GetService(Type serviceType)
+        {
+            return Resolve(serviceType);
         }
     }
 }
