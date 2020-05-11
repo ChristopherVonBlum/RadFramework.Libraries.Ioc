@@ -7,10 +7,10 @@ namespace RadFramework.Libraries.Ioc.Registrations
 {
     public class TransientFactoryRegistration : RegistrationBase
     {
-        private readonly Func<object> factoryFunc;
+        private readonly Func<Container.Container, object> factoryFunc;
         private readonly Container.Container container;
 
-        public TransientFactoryRegistration(Func<object> factoryFunc, Container.Container container)
+        public TransientFactoryRegistration(Func<Container.Container, object> factoryFunc, Container.Container container)
         {
             this.factoryFunc = factoryFunc;
             this.container = container;
@@ -20,7 +20,7 @@ namespace RadFramework.Libraries.Ioc.Registrations
         {
             using (Arg.UseContextualResolver(container.Resolve))
             {
-                return factoryFunc();
+                return factoryFunc(container);
             }
         }
     }
