@@ -13,10 +13,10 @@ namespace Tests
         [Test]
         public void Test1()
         {
-            SimpleContainer c = new SimpleContainer();
+            Container c = new Container();
             
-            c.Register(typeof(Test));
-            c.Register(typeof(TestDep))
+            c.RegisterTransient(typeof(Test));
+            c.RegisterSingleton(typeof(TestDep))
                 ;
 
             var res = c.Resolve<Test>();

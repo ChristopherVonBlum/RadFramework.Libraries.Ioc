@@ -5,18 +5,18 @@ using RadFramework.Libraries.Ioc.Container;
 
 namespace RadFramework.Libraries.Ioc.Registrations
 {
-    class FactoryRegistration : RegistrationBase
+    public class TransientFactoryRegistration : RegistrationBase
     {
         private readonly Func<object> factoryFunc;
-        private readonly SimpleContainer container;
+        private readonly Container.Container container;
 
-        public FactoryRegistration(Func<object> factoryFunc, SimpleContainer container)
+        public TransientFactoryRegistration(Func<object> factoryFunc, Container.Container container)
         {
             this.factoryFunc = factoryFunc;
             this.container = container;
         }
         
-        public override object ResolveService(Type serviceKey)
+        public override object ResolveService()
         {
             using (Arg.UseContextualResolver(container.Resolve))
             {

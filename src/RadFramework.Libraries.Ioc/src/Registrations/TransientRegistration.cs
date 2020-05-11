@@ -9,16 +9,16 @@ using RadFramework.Libraries.Reflection.Caching.Queries;
 
 namespace RadFramework.Libraries.Ioc.Registrations
 {
-    public class IocImplementationRegistration : RegistrationBase
+    public class TransientRegistration : RegistrationBase
     {
-        private readonly SimpleContainer simpleContainer;
+        private readonly Container.Container container;
 
         private readonly Func<object> construct;
         
-        public IocImplementationRegistration(CachedType tImplementation,
-            IDependencyInjectionLambdaGenerator lambdaGenerator, SimpleContainer simpleContainer)
+        public TransientRegistration(CachedType tImplementation,
+            IDependencyInjectionLambdaGenerator lambdaGenerator, Container.Container container)
         {
-            this.simpleContainer = simpleContainer;
+            this.container = container;
 
             this.construct = lambdaGenerator.CreateConstructorInjectionLambda(
                 tImplementation.Query(t =>
@@ -28,9 +28,9 @@ namespace RadFramework.Libraries.Ioc.Registrations
                 info => info.InnerMetaData.Name);
         }
 
-        public override object ResolveService(Type serviceKey)
+        public override object ResolveService()
         {
-            using (Arg.UseContextualResolver(simpleContainer.Resolve))
+            using (Arg.UseContextualResolver(container.Resolve))
             {
                 return construct();
             }
