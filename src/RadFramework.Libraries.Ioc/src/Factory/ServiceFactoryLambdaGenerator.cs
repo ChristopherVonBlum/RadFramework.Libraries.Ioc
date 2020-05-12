@@ -44,9 +44,12 @@ namespace RadFramework.Libraries.Ioc.Factory
             
             if (chooseInjectionProperties != null)
             {
-                var injectionProperties = chooseInjectionProperties(type.Query(ClassQueries.GetPublicImplementedProperties).Select(p =>(CachedPropertyInfo)p));
-                
-                injectionLambdas.Add(lambdaGenerator.CreatePropertyInjectionLambda(type, injectionProperties.ToArray()));
+                var injectionProperties = chooseInjectionProperties(type.Query(ClassQueries.GetPublicImplementedProperties).Select(p =>(CachedPropertyInfo)p)).ToArray();
+
+                if (injectionProperties.Length > 0)
+                {
+                    injectionLambdas.Add(lambdaGenerator.CreatePropertyInjectionLambda(type, injectionProperties));
+                }
             }
 
             return CombineConstructorInjectionAndMemberInjectionLambdas(constructLamda, injectionLambdas.ToArray());
@@ -67,7 +70,7 @@ namespace RadFramework.Libraries.Ioc.Factory
 
             List<Expression> methodBody = new List<Expression>
             {
-                Expression.Assign(constructionResult, Expression.Invoke(Expression.Constant(constructorInjectionLambda)))
+                Expression.Assign(constructionResult, Expression.Invoke(Expression.Constant(constructorInjectionLambda), containerInstance))
             };
 
             foreach (Action<Container, object> injectionLambda in memberInjectionLambdas)

@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Linq;
 using RadFramework.Libraries.Ioc.Factory;
 using RadFramework.Libraries.Reflection.Caching;
-using RadFramework.Libraries.Reflection.Caching.Queries;
 
 namespace RadFramework.Libraries.Ioc.Registrations
 {
     public class TransientRegistration : RegistrationBase
     {
+       
         private readonly Container container;
 
         private readonly Lazy<Func<Container, object>> construct;
