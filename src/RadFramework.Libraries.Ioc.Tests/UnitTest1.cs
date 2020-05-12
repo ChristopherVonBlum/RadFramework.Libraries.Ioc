@@ -1,7 +1,6 @@
 using NUnit.Framework;
-using RadFramework.Libraries.Ioc.Container;
 
-namespace Tests
+namespace RadFramework.Libraries.Ioc.Tests
 {
     public class Tests
     {

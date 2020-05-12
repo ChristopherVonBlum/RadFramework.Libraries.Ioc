@@ -1,5 +1,4 @@
 using System;
-using RadFramework.Libraries.Ioc.Container;
 
 namespace RadFramework.Libraries.Ioc.Registrations
 {
@@ -7,7 +6,7 @@ namespace RadFramework.Libraries.Ioc.Registrations
     {
         private Lazy<object> singleton;
 
-        public SingletonFactoryRegistration(Func<Container.Container, object> factoryFunc, Container.Container container) : base(factoryFunc, container)
+        public SingletonFactoryRegistration(Func<Container, object> factoryFunc, Container container) : base(factoryFunc, container)
         {
             singleton = new Lazy<object>(() => base.ResolveService());
         }

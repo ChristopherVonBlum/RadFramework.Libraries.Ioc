@@ -1,16 +1,13 @@
 ﻿using System;
-using CVB.NET.Abstractions.Ioc.Injection.Parameter;
-using RadFramework.Libraries.Ioc.Base;
-using RadFramework.Libraries.Ioc.Container;
 
 namespace RadFramework.Libraries.Ioc.Registrations
 {
     public class TransientFactoryRegistration : RegistrationBase
     {
-        private readonly Func<Container.Container, object> factoryFunc;
-        private readonly Container.Container container;
+        private readonly Func<Container, object> factoryFunc;
+        private readonly Container container;
 
-        public TransientFactoryRegistration(Func<Container.Container, object> factoryFunc, Container.Container container)
+        public TransientFactoryRegistration(Func<Container, object> factoryFunc, Container container)
         {
             this.factoryFunc = factoryFunc;
             this.container = container;
@@ -18,10 +15,7 @@ namespace RadFramework.Libraries.Ioc.Registrations
         
         public override object ResolveService()
         {
-            using (Arg.UseContextualResolver(container.Resolve))
-            {
-                return factoryFunc(container);
-            }
+            return factoryFunc(container);
         }
     }
 }

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Linq;
-using CVB.NET.Abstractions.Ioc.Injection.Lambda;
-using CVB.NET.Abstractions.Ioc.Injection.Parameter;
-using RadFramework.Libraries.Ioc.Base;
-using RadFramework.Libraries.Ioc.Container;
+using RadFramework.Libraries.Ioc.Factory;
 using RadFramework.Libraries.Reflection.Caching;
 using RadFramework.Libraries.Reflection.Caching.Queries;
 
@@ -11,29 +8,21 @@ namespace RadFramework.Libraries.Ioc.Registrations
 {
     public class TransientRegistration : RegistrationBase
     {
-        private readonly Container.Container container;
+        private readonly Container container;
 
-        private readonly Func<object> construct;
+        private readonly Lazy<Func<Container, object>> construct;
         
         public TransientRegistration(CachedType tImplementation,
-            IDependencyInjectionLambdaGenerator lambdaGenerator, Container.Container container)
+            ServiceFactoryLambdaGenerator lambdaGenerator, Container container)
         {
             this.container = container;
 
-            this.construct = lambdaGenerator.CreateConstructorInjectionLambda(
-                tImplementation.Query(t =>
-                    t.GetConstructors()
-                        .OrderByDescending(c => ((CachedConstructorInfo) c).Query(MethodBaseQueries.GetParameters).Length)
-                        .First()), 
-                info => info.InnerMetaData.Name);
+            this.construct = new Lazy<Func<Container, object>>(() => lambdaGenerator.CreateInstanceFactory(tImplementation, container.injectionOptions, InjectionOptions));
         }
 
         public override object ResolveService()
         {
-            using (Arg.UseContextualResolver(container.Resolve))
-            {
-                return construct();
-            }
+            return construct.Value(container);
         }
     }
 }
