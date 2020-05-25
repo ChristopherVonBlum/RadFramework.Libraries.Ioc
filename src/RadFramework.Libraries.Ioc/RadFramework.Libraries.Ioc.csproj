@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp2.1</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageVersion>1.0.5</PackageVersion>
+        <PackageVersion>1.0.7</PackageVersion>
         <PackageProjectUrl>https://github.com/ChristopherVonBlum/RadFramework.Libraries.Ioc</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/ChristopherVonBlum/RadFramework.Libraries.Ioc/blob/master/LICENSE.md</PackageLicenseUrl>
     </PropertyGroup>

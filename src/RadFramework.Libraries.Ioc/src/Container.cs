@@ -29,37 +29,37 @@ namespace RadFramework.Libraries.Ioc
             };
         }
         
-        public RegistrationBase RegisterTransient(Type tInterface, Type tImplementation)
+        public InjectionOptions RegisterTransient(Type tInterface, Type tImplementation)
         {
-            return registrations[tInterface] = new TransientRegistration(tImplementation, LambdaGenerator, this)
+            return (registrations[tInterface] = new TransientRegistration(tImplementation, LambdaGenerator, this)
             {
                 InjectionOptions = injectionOptions.Clone()
-            };
+            }).InjectionOptions;
         }
 
-        public RegistrationBase RegisterTransient<TInterface, TImplementation>()
+        public InjectionOptions RegisterTransient<TInterface, TImplementation>()
         {
-            return registrations[typeof(TInterface)] = new TransientRegistration(typeof(TImplementation), LambdaGenerator, this)
+            return (registrations[typeof(TInterface)] = new TransientRegistration(typeof(TImplementation), LambdaGenerator, this)
             {
                 InjectionOptions = injectionOptions.Clone()
-            };
+            }).InjectionOptions;
         }
 
-        public RegistrationBase RegisterTransient(Type tImplementation)
+        public InjectionOptions RegisterTransient(Type tImplementation)
         {
-            return registrations[tImplementation] = new TransientRegistration(tImplementation, LambdaGenerator, this)
+            return (registrations[tImplementation] = new TransientRegistration(tImplementation, LambdaGenerator, this)
             {
                 InjectionOptions = injectionOptions.Clone()
-            };
+            }).InjectionOptions;
         }
         
-        public RegistrationBase RegisterTransient<TImplementation>()
+        public InjectionOptions RegisterTransient<TImplementation>()
         {
             Type tImplementation = typeof(TImplementation);
-            return registrations[tImplementation] = new TransientRegistration(tImplementation, LambdaGenerator, this)
+            return (registrations[tImplementation] = new TransientRegistration(tImplementation, LambdaGenerator, this)
             {
                 InjectionOptions = injectionOptions.Clone()
-            };
+            }).InjectionOptions;
         }
 
         public void RegisterSemiAutomaticTransient(Type tImplementation, Func<Container, object> construct)
@@ -73,37 +73,37 @@ namespace RadFramework.Libraries.Ioc
         }
 
         
-        public RegistrationBase RegisterSingleton(Type tInterface, Type tImplementation)
+        public InjectionOptions RegisterSingleton(Type tInterface, Type tImplementation)
         {
-            return registrations[tInterface] = new SingletonRegistration(tImplementation, LambdaGenerator, this)
+            return (registrations[tInterface] = new SingletonRegistration(tImplementation, LambdaGenerator, this)
             {
                 InjectionOptions = injectionOptions.Clone()
-            };
+            }).InjectionOptions;
         }
 
-        public RegistrationBase RegisterSingleton<TInterface, TImplementation>()
+        public InjectionOptions RegisterSingleton<TInterface, TImplementation>()
         {
-            return registrations[typeof(TInterface)] = new SingletonRegistration(typeof(TImplementation), LambdaGenerator, this)
+            return (registrations[typeof(TInterface)] = new SingletonRegistration(typeof(TImplementation), LambdaGenerator, this)
             {
                 InjectionOptions = injectionOptions.Clone()
-            };
+            }).InjectionOptions;
         }
 
-        public RegistrationBase RegisterSingleton(Type tImplementation)
+        public InjectionOptions RegisterSingleton(Type tImplementation)
         {
-            return registrations[tImplementation] = new SingletonRegistration(tImplementation, LambdaGenerator, this)
+            return (registrations[tImplementation] = new SingletonRegistration(tImplementation, LambdaGenerator, this)
             {
                 InjectionOptions = injectionOptions.Clone()
-            };
+            }).InjectionOptions;
         }
         
-        public RegistrationBase RegisterSingleton<TImplementation>()
+        public InjectionOptions RegisterSingleton<TImplementation>()
         {
             Type tImplementation = typeof(TImplementation);
-            return registrations[tImplementation] = new SingletonRegistration(tImplementation, LambdaGenerator, this)
+            return (registrations[tImplementation] = new SingletonRegistration(tImplementation, LambdaGenerator, this)
             {
                 InjectionOptions = injectionOptions.Clone()
-            };
+            }).InjectionOptions;
         }
 
         public void RegisterSemiAutomaticSingleton(Type tImplementation, Func<Container, object> construct)
@@ -130,6 +130,19 @@ namespace RadFramework.Libraries.Ioc
         {
             registrations[typeof(TImplementation)] = new SingletonInstanceRegistration(instance);
         }
+
+        public T Activate<T>(InjectionOptions injectionOptions = null)
+        {
+            return (T)Activate(typeof(T), injectionOptions);
+        }
+        
+        public object Activate(Type t, InjectionOptions injectionOptions = null)
+        {
+            return new TransientRegistration(t, LambdaGenerator, this)
+            {
+                InjectionOptions = injectionOptions ?? this.injectionOptions
+            }.ResolveService();
+        }
         
         public T Resolve<T>()
         {
@@ -138,7 +151,12 @@ namespace RadFramework.Libraries.Ioc
         
         public object Resolve(Type t)
         {
-                return registrations[t].ResolveService();
+            if (!registrations.ContainsKey(t))
+            {
+                throw new RegistrationNotFoundException(t);
+            }
+            
+            return registrations[t].ResolveService();
         }
 
         public object GetService(Type serviceType)
