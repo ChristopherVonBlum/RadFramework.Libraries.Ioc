@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using RadFramework.Libraries.Ioc.Factory;
 using RadFramework.Libraries.Ioc.Registrations;
@@ -7,8 +9,18 @@ using RadFramework.Libraries.Reflection.Caching.Queries;
 
 namespace RadFramework.Libraries.Ioc
 {
-    public class Container : IServiceProvider
+    public class Container : IServiceProvider, IContainer
     {
+        public IEnumerable<(Type serviceType, Func<object> resolve)> Services
+        {
+            get
+            {
+                return registrations
+                    .Select<KeyValuePair<Type, RegistrationBase>, (Type serviceType, Func<object> resolve)>
+                        (r => (r.Key, () => r.Value.ResolveService()));
+            }
+        }
+
         internal readonly InjectionOptions injectionOptions;
         protected ServiceFactoryLambdaGenerator LambdaGenerator { get; } = new ServiceFactoryLambdaGenerator();
         
